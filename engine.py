@@ -160,17 +160,7 @@ class gameState:
             (-2, -1), (-2, +1), (+2, -1), (+2, +1),
             (+1, +2), (+1, -2), (-1, +2), (-1, -2)
         ]
-        for dr , dc in direction:
-            endR , endC = r + dr , c + dc
-            
-            if 0 <= endR <= 7 and 0 <= endC <= 7:
-                targetPos = self.board[endR][endC]
-                if self.whiteToMove:
-                    if targetPos == 0 or 6 < targetPos < 13:
-                        moves.append(Move((r, c), (endR, endC), self.board)) 
-                else :
-                    if 0 <= targetPos < 7:
-                        moves.append(Move((r, c), (endR, endC), self.board)) 
+        self.generator(r, c, moves, direction)
             
     
     # def getBishopMoves(self, r, c, moves):
@@ -251,23 +241,7 @@ class gameState:
 
     def getBishopMoves(self, r, c, moves):
         direction = [(-1, -1), (-1, +1), (+1, -1), (+1, +1)]    
-        for dr , dc in direction:
-            for i in range(1,8):
-                endR , endC = r + dr*i , c + dc*i
-                if 0 <= endR <= 7 and 0 <= endC <= 7:
-                    targetPos = self.board[endR][endC]
-                    if targetPos == 0 :
-                        moves.append(Move((r, c), (endR, endC), self.board)) 
-                    else:
-                        if self.whiteToMove:
-                            if 7 <= targetPos <= 12:  # black piece
-                                moves.append(Move((r, c), (endR, endC), self.board))
-                        else:
-                            if 1 <= targetPos <= 6:  # white piece
-                                moves.append(Move((r, c), (endR, endC), self.board))
-                        break
-                else:
-                    break
+        self.generator(r, c, moves, direction, 8)
         
         
         
@@ -350,23 +324,7 @@ class gameState:
                     
     def getRookMoves(self, r, c, moves):
         direction = [(0, -1), (0, +1), (+1, 0), (-1, 0)]    
-        for dr , dc in direction:
-            for i in range(1,8):
-                endR , endC = r + dr*i , c + dc*i
-                if 0 <= endR <= 7 and 0 <= endC <= 7:
-                    targetPos = self.board[endR][endC]
-                    if targetPos == 0 :
-                        moves.append(Move((r, c), (endR, endC), self.board)) 
-                    else:
-                        if self.whiteToMove:
-                            if 7 <= targetPos <= 12: 
-                                moves.append(Move((r, c), (endR, endC), self.board))
-                        else:
-                            if 1 <= targetPos <= 6: 
-                                moves.append(Move((r, c), (endR, endC), self.board))
-                        break
-                else:
-                    break 
+        self.generator(r, c, moves, direction, 8)
                     
                     
                     
@@ -523,8 +481,20 @@ class gameState:
     def getQueenMoves(self, r, c, moves):
         direction = [(0, -1), (0, +1), (+1, 0), (-1, 0), 
                      (-1, -1), (-1, +1), (+1, -1), (+1, +1)]   
+        self.generator(r, c, moves, direction, 8)
+        
+
+    def getKingMoves(self, r, c, moves):
+        direction = [(-1,-1) , (-1,0) , (-1,+1) , (0,+1) , 
+                     (+1,+1) , (+1,0) , (+1,-1) , (0,-1)]
+        self.generator(r, c, moves, direction)
+        
+        
+            
+    def generator(self, r, c, moves, direction , n=2):
+        
         for dr , dc in direction:
-            for i in range(1,8):
+            for i in range(1,n):
                 endR , endC = r + dr*i , c + dc*i
                 if 0 <= endR <= 7 and 0 <= endC <= 7:
                     targetPos = self.board[endR][endC]
@@ -540,9 +510,6 @@ class gameState:
                         break
                 else:
                     break 
-
-    def getKingMoves(self, r, c, moves):
-        pass
 
         
 class Move():
