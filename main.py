@@ -6,7 +6,7 @@ dimension = 8
 sq_size = height//dimension
 max_fps = 15
 images = {} #Stores Image
-select = () #Selected Square
+selected = () #Selected Square
 clicked = [] 
 
 
@@ -17,7 +17,7 @@ def load_img():
         images[str(piece)] = p.transform.scale(p.image.load(f"./images/{str(piece)}.png") , (sq_size , sq_size))
         
 def main():
-    global select ,clicked
+    global selected ,clicked
     
     #Screen Initializer 
     p.init()
@@ -41,20 +41,22 @@ def main():
                 loc = p.mouse.get_pos()
                 row = loc[1]//sq_size
                 col = loc[0]//sq_size
-                if select == (row , col):
-                    select = ()
+                if selected == (row , col):
+                    selected = ()
                     clicked = []
                 else:
-                    select = (row , col)
-                    clicked.append(select)
+                    selected = (row , col)
+                    clicked.append(selected)
                 if len(clicked) == 2:
                     move = engine.Move(clicked[0] , clicked[1] , gs.board)
-                    print(move.getChessNotation())
                     if move in validMoves:
                         gs.makeMove(move)
                         moveMade = True
-                    select = ()
-                    clicked = []
+                        selected = ()
+                        clicked = []
+                        print(move.getChessNotation())
+                    else:
+                        clicked = [selected]
             elif e.type == p.KEYDOWN :
                 if e.key == p.K_z:
                     gs.undoMove()
