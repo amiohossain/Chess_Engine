@@ -173,309 +173,373 @@ class gameState:
                         moves.append(Move((r, c), (endR, endC), self.board)) 
             
     
+    # def getBishopMoves(self, r, c, moves):
+    #     if self.whiteToMove:
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c+i <= 7 :
+    #                 if self.board[r+i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 elif  6 < self.board[r+i][c+i] < 13 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 if 0 < self.board[r+i][c+i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c-i <= 7 :
+    #                 if self.board[r-i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 elif  6 < self.board[r-i][c-i] < 13 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 if 0 < self.board[r-i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c-i <= 7 :
+    #                 if self.board[r+i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 elif  6 < self.board[r+i][c-i] < 13 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 if 0 < self.board[r+i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c+i <= 7 :
+    #                 if self.board[r-i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 elif  6 < self.board[r-i][c+i] < 13 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 if 0 < self.board[r-i][c+i] < 13 :
+    #                     break
+                    
+    #     else :
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c+i <= 7 :
+    #                 if self.board[r+i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 elif  0 < self.board[r+i][c+i] < 7 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 if 0 < self.board[r+i][c+i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c-i <= 7 :
+    #                 if self.board[r-i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 elif  0 < self.board[r-i][c-i] < 7 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 if 0 < self.board[r-i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c-i <= 7 :
+    #                 if self.board[r+i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 elif  0 < self.board[r+i][c-i] < 7 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 if 0 < self.board[r+i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c+i <= 7 :
+    #                 if self.board[r-i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 elif  0 < self.board[r-i][c+i] < 7 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 if 0 < self.board[r-i][c+i] < 13 :
+    #                     break
+                    
+
     def getBishopMoves(self, r, c, moves):
-        if self.whiteToMove:
+        direction = [(-1, -1), (-1, +1), (+1, -1), (+1, +1)]    
+        for dr , dc in direction:
             for i in range(1,8):
-                if r+i <= 7 and c+i <= 7 :
-                    if self.board[r+i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    elif  6 < self.board[r+i][c+i] < 13 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    if 0 < self.board[r+i][c+i] < 13 :
+                endR , endC = r + dr*i , c + dc*i
+                if 0 <= endR <= 7 and 0 <= endC <= 7:
+                    targetPos = self.board[endR][endC]
+                    if targetPos == 0 :
+                        moves.append(Move((r, c), (endR, endC), self.board)) 
+                    else:
+                        if self.whiteToMove:
+                            if 7 <= targetPos <= 12:  # black piece
+                                moves.append(Move((r, c), (endR, endC), self.board))
+                        else:
+                            if 1 <= targetPos <= 6:  # white piece
+                                moves.append(Move((r, c), (endR, endC), self.board))
                         break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c-i <= 7 :
-                    if self.board[r-i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    elif  6 < self.board[r-i][c-i] < 13 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    if 0 < self.board[r-i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r+i <= 7 and c-i <= 7 :
-                    if self.board[r+i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    elif  6 < self.board[r+i][c-i] < 13 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    if 0 < self.board[r+i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c+i <= 7 :
-                    if self.board[r-i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    elif  6 < self.board[r-i][c+i] < 13 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    if 0 < self.board[r-i][c+i] < 13 :
-                        break
-                    
-        else :
-            for i in range(1,8):
-                if r+i <= 7 and c+i <= 7 :
-                    if self.board[r+i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    elif  0 < self.board[r+i][c+i] < 7 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    if 0 < self.board[r+i][c+i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c-i <= 7 :
-                    if self.board[r-i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    elif  0 < self.board[r-i][c-i] < 7 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    if 0 < self.board[r-i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r+i <= 7 and c-i <= 7 :
-                    if self.board[r+i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    elif  0 < self.board[r+i][c-i] < 7 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    if 0 < self.board[r+i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c+i <= 7 :
-                    if self.board[r-i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    elif  0 < self.board[r-i][c+i] < 7 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    if 0 < self.board[r-i][c+i] < 13 :
-                        break
-                    
+                else:
+                    break
         
         
+        
+    # def getRookMoves(self, r, c, moves):
+    #     if self.whiteToMove:
+    #         for i in range(1,8):
+    #             if r+i <= 7 :
+    #                 if self.board[r+i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 elif  6 < self.board[r+i][c] < 13 :
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 if 0 < self.board[r+i][c] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i >= 0 :
+    #                 if self.board[r-i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 elif  6 < self.board[r-i][c] < 13 :
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 if 0 < self.board[r-i][c] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if c+i <= 7 :
+    #                 if self.board[r][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 elif  6 < self.board[r][c+i] < 13 :
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 if 0 < self.board[r][c+i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if c-i >= 0 :
+    #                 if self.board[r][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 elif  6 < self.board[r][c-i] < 13 :
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 if 0 < self.board[r][c-i] < 13 :
+    #                     break
+                    
+    #     else :
+            
+    #         for i in range(1,8):
+    #             if r+i <= 7 :
+    #                 if self.board[r+i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 elif  0 < self.board[r+i][c] < 7 :
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 if 0 < self.board[r+i][c] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i >= 0 :
+    #                 if self.board[r-i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 elif  0 < self.board[r-i][c] < 7 :
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 if 0 < self.board[r-i][c] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if c+i <= 7 :
+    #                 if self.board[r][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 elif  0 < self.board[r][c+i] < 7 :
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 if 0 < self.board[r][c+i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if c-i >= 0 :
+    #                 if self.board[r][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 elif  0 < self.board[r][c-i] < 7 :
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 if 0 < self.board[r][c-i] < 13 :
+    #                     break
+                    
+                    
     def getRookMoves(self, r, c, moves):
-        if self.whiteToMove:
+        direction = [(0, -1), (0, +1), (+1, 0), (-1, 0)]    
+        for dr , dc in direction:
             for i in range(1,8):
-                if r+i <= 7 :
-                    if self.board[r+i][c] == 0 :
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    elif  6 < self.board[r+i][c] < 13 :
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    if 0 < self.board[r+i][c] < 13 :
+                endR , endC = r + dr*i , c + dc*i
+                if 0 <= endR <= 7 and 0 <= endC <= 7:
+                    targetPos = self.board[endR][endC]
+                    if targetPos == 0 :
+                        moves.append(Move((r, c), (endR, endC), self.board)) 
+                    else:
+                        if self.whiteToMove:
+                            if 7 <= targetPos <= 12: 
+                                moves.append(Move((r, c), (endR, endC), self.board))
+                        else:
+                            if 1 <= targetPos <= 6: 
+                                moves.append(Move((r, c), (endR, endC), self.board))
                         break
+                else:
+                    break 
                     
-            for i in range(1,8):
-                if r-i >= 0 :
-                    if self.board[r-i][c] == 0 :
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    elif  6 < self.board[r-i][c] < 13 :
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    if 0 < self.board[r-i][c] < 13 :
-                        break
                     
-            for i in range(1,8):
-                if c+i <= 7 :
-                    if self.board[r][c+i] == 0 :
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    elif  6 < self.board[r][c+i] < 13 :
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    if 0 < self.board[r][c+i] < 13 :
-                        break
                     
-            for i in range(1,8):
-                if c-i >= 0 :
-                    if self.board[r][c-i] == 0 :
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    elif  6 < self.board[r][c-i] < 13 :
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    if 0 < self.board[r][c-i] < 13 :
-                        break
+    # def getQueenMoves(self, r, c, moves):
+    #     if self.whiteToMove:
+    #         for i in range(1,8):
+    #             if r+i <= 7 :
+    #                 if self.board[r+i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 elif  6 < self.board[r+i][c] < 13 :
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 if 0 < self.board[r+i][c] < 13 :
+    #                     break
                     
-        else :
+    #         for i in range(1,8):
+    #             if r-i >= 0 :
+    #                 if self.board[r-i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 elif  6 < self.board[r-i][c] < 13 :
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 if 0 < self.board[r-i][c] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if c+i <= 7 :
+    #                 if self.board[r][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 elif  6 < self.board[r][c+i] < 13 :
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 if 0 < self.board[r][c+i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if c-i >= 0 :
+    #                 if self.board[r][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 elif  6 < self.board[r][c-i] < 13 :
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 if 0 < self.board[r][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c+i <= 7 :
+    #                 if self.board[r+i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 elif  6 < self.board[r+i][c+i] < 13 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 if 0 < self.board[r+i][c+i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c-i <= 7 :
+    #                 if self.board[r-i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 elif  6 < self.board[r-i][c-i] < 13 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 if 0 < self.board[r-i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c-i <= 7 :
+    #                 if self.board[r+i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 elif  6 < self.board[r+i][c-i] < 13 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 if 0 < self.board[r+i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c+i <= 7 :
+    #                 if self.board[r-i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 elif  6 < self.board[r-i][c+i] < 13 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 if 0 < self.board[r-i][c+i] < 13 :
+    #                     break
+
+    #     else :
             
-            for i in range(1,8):
-                if r+i <= 7 :
-                    if self.board[r+i][c] == 0 :
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    elif  0 < self.board[r+i][c] < 7 :
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    if 0 < self.board[r+i][c] < 13 :
-                        break
+            
+    #         for i in range(1,8):
+    #             if r+i <= 7 :
+    #                 if self.board[r+i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 elif  0 < self.board[r+i][c] < 7:
+    #                     moves.append(Move((r,c) , (r+i , c) , self.board))
+    #                 if 0 < self.board[r+i][c] < 13 :
+    #                     break
                     
-            for i in range(1,8):
-                if r-i >= 0 :
-                    if self.board[r-i][c] == 0 :
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    elif  0 < self.board[r-i][c] < 7 :
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    if 0 < self.board[r-i][c] < 13 :
-                        break
+    #         for i in range(1,8):
+    #             if r-i >= 0 :
+    #                 if self.board[r-i][c] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 elif  0 < self.board[r-i][c] < 7:
+    #                     moves.append(Move((r,c) , (r-i , c) , self.board))
+    #                 if 0 < self.board[r-i][c] < 13 :
+    #                     break
                     
-            for i in range(1,8):
-                if c+i <= 7 :
-                    if self.board[r][c+i] == 0 :
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    elif  0 < self.board[r][c+i] < 7 :
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    if 0 < self.board[r][c+i] < 13 :
-                        break
+    #         for i in range(1,8):
+    #             if c+i <= 7 :
+    #                 if self.board[r][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 elif  0 < self.board[r][c+i] < 7:
+    #                     moves.append(Move((r,c) , (r , c+i) , self.board))
+    #                 if 0 < self.board[r][c+i] < 13 :
+    #                     break
                     
-            for i in range(1,8):
-                if c-i >= 0 :
-                    if self.board[r][c-i] == 0 :
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    elif  0 < self.board[r][c-i] < 7 :
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    if 0 < self.board[r][c-i] < 13 :
-                        break
+    #         for i in range(1,8):
+    #             if c-i >= 0 :
+    #                 if self.board[r][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 elif  0 < self.board[r][c-i] < 7:
+    #                     moves.append(Move((r,c) , (r , c-i) , self.board))
+    #                 if 0 < self.board[r][c-i] < 13 :
+    #                     break
                     
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c+i <= 7 :
+    #                 if self.board[r+i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 elif  0 < self.board[r+i][c+i] < 7 :
+    #                     moves.append(Move((r,c) , (r+i , c+i) , self.board))
+    #                 if 0 < self.board[r+i][c+i] < 13 :
+    #                     break
                     
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c-i <= 7 :
+    #                 if self.board[r-i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 elif  0 < self.board[r-i][c-i] < 7 :
+    #                     moves.append(Move((r,c) , (r-i , c-i) , self.board))
+    #                 if 0 < self.board[r-i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r+i <= 7 and c-i <= 7 :
+    #                 if self.board[r+i][c-i] == 0 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 elif  0 < self.board[r+i][c-i] < 7 :
+    #                     moves.append(Move((r,c) , (r+i , c-i) , self.board))
+    #                 if 0 < self.board[r+i][c-i] < 13 :
+    #                     break
+                    
+    #         for i in range(1,8):
+    #             if r-i <= 7 and c+i <= 7 :
+    #                 if self.board[r-i][c+i] == 0 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 elif  0 < self.board[r-i][c+i] < 7 :
+    #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
+    #                 if 0 < self.board[r-i][c+i] < 13 :
+    #                     break
+
+
     def getQueenMoves(self, r, c, moves):
-        if self.whiteToMove:
+        direction = [(0, -1), (0, +1), (+1, 0), (-1, 0), 
+                     (-1, -1), (-1, +1), (+1, -1), (+1, +1)]   
+        for dr , dc in direction:
             for i in range(1,8):
-                if r+i <= 7 :
-                    if self.board[r+i][c] == 0 :
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    elif  6 < self.board[r+i][c] < 13 :
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    if 0 < self.board[r+i][c] < 13 :
+                endR , endC = r + dr*i , c + dc*i
+                if 0 <= endR <= 7 and 0 <= endC <= 7:
+                    targetPos = self.board[endR][endC]
+                    if targetPos == 0 :
+                        moves.append(Move((r, c), (endR, endC), self.board)) 
+                    else:
+                        if self.whiteToMove:
+                            if 7 <= targetPos <= 12: 
+                                moves.append(Move((r, c), (endR, endC), self.board))
+                        else:
+                            if 1 <= targetPos <= 6: 
+                                moves.append(Move((r, c), (endR, endC), self.board))
                         break
-                    
-            for i in range(1,8):
-                if r-i >= 0 :
-                    if self.board[r-i][c] == 0 :
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    elif  6 < self.board[r-i][c] < 13 :
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    if 0 < self.board[r-i][c] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if c+i <= 7 :
-                    if self.board[r][c+i] == 0 :
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    elif  6 < self.board[r][c+i] < 13 :
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    if 0 < self.board[r][c+i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if c-i >= 0 :
-                    if self.board[r][c-i] == 0 :
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    elif  6 < self.board[r][c-i] < 13 :
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    if 0 < self.board[r][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r+i <= 7 and c+i <= 7 :
-                    if self.board[r+i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    elif  6 < self.board[r+i][c+i] < 13 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    if 0 < self.board[r+i][c+i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c-i <= 7 :
-                    if self.board[r-i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    elif  6 < self.board[r-i][c-i] < 13 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    if 0 < self.board[r-i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r+i <= 7 and c-i <= 7 :
-                    if self.board[r+i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    elif  6 < self.board[r+i][c-i] < 13 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    if 0 < self.board[r+i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c+i <= 7 :
-                    if self.board[r-i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    elif  6 < self.board[r-i][c+i] < 13 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    if 0 < self.board[r-i][c+i] < 13 :
-                        break
-
-        else :
-            
-            
-            for i in range(1,8):
-                if r+i <= 7 :
-                    if self.board[r+i][c] == 0 :
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    elif  0 < self.board[r+i][c] < 7:
-                        moves.append(Move((r,c) , (r+i , c) , self.board))
-                    if 0 < self.board[r+i][c] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i >= 0 :
-                    if self.board[r-i][c] == 0 :
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    elif  0 < self.board[r-i][c] < 7:
-                        moves.append(Move((r,c) , (r-i , c) , self.board))
-                    if 0 < self.board[r-i][c] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if c+i <= 7 :
-                    if self.board[r][c+i] == 0 :
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    elif  0 < self.board[r][c+i] < 7:
-                        moves.append(Move((r,c) , (r , c+i) , self.board))
-                    if 0 < self.board[r][c+i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if c-i >= 0 :
-                    if self.board[r][c-i] == 0 :
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    elif  0 < self.board[r][c-i] < 7:
-                        moves.append(Move((r,c) , (r , c-i) , self.board))
-                    if 0 < self.board[r][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r+i <= 7 and c+i <= 7 :
-                    if self.board[r+i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    elif  0 < self.board[r+i][c+i] < 7 :
-                        moves.append(Move((r,c) , (r+i , c+i) , self.board))
-                    if 0 < self.board[r+i][c+i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c-i <= 7 :
-                    if self.board[r-i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    elif  0 < self.board[r-i][c-i] < 7 :
-                        moves.append(Move((r,c) , (r-i , c-i) , self.board))
-                    if 0 < self.board[r-i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r+i <= 7 and c-i <= 7 :
-                    if self.board[r+i][c-i] == 0 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    elif  0 < self.board[r+i][c-i] < 7 :
-                        moves.append(Move((r,c) , (r+i , c-i) , self.board))
-                    if 0 < self.board[r+i][c-i] < 13 :
-                        break
-                    
-            for i in range(1,8):
-                if r-i <= 7 and c+i <= 7 :
-                    if self.board[r-i][c+i] == 0 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    elif  0 < self.board[r-i][c+i] < 7 :
-                        moves.append(Move((r,c) , (r-i , c+i) , self.board))
-                    if 0 < self.board[r-i][c+i] < 13 :
-                        break
-
+                else:
+                    break 
 
     def getKingMoves(self, r, c, moves):
         pass
