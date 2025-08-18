@@ -18,6 +18,7 @@ class gameState:
         self.moveLog = []
         self.whiteKingLocation = (7,4)
         self.BlaKingLocation = (0,4)
+        
 
         self.moveFunctionList = [self.getPawnMoves , self.getKnightMoves , self.getBishopMoves ,
                                  self.getRookMoves , self.getQueenMoves , self.getKingMoves , 
@@ -57,6 +58,12 @@ class gameState:
                 moves.remove(moves[i])
             self.whiteToMove = not self.whiteToMove
             self.undoMove()
+        if len(moves) == 0 :
+            if self.inCheck(): self.checkMate = True
+            else : self.staleMate = True
+        else:
+            self.checkMate = False
+            self.staleMate = False
         return moves
     
     
