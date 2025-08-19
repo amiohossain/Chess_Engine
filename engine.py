@@ -19,6 +19,11 @@ class gameState:
         self.BlaKingLocation = (0,4)
         self.checkMate = False
         self.staleMate = False
+        self.enPassentMove = ()
+        
+        self.currentCastlingRights = CasstleRights(True, True, True, True)
+        self.castlingRightsLogs = [CasstleRights(self.currentCastlingRights.wks , self.currentCastlingRights.bks,
+                                                 self.currentCastlingRights.wqs , self.currentCastlingRights.bqs)]
         
         self.moveFunctionList = [self.getPawnMoves , self.getKnightMoves , self.getBishopMoves ,
                                  self.getRookMoves , self.getQueenMoves , self.getKingMoves , 
@@ -36,6 +41,24 @@ class gameState:
             self.whiteKingLocation = (move.endRow , move.endCol)
         elif move.moved_piece == 12:
             self.BlaKingLocation = (move.endRow , move.endCol)
+            
+        if move.isPawnPromotion:
+            if move.moved_piece == 1:
+                self.board[move.endRow][move.endCol] = 5
+            elif move.moved_piece == 7:
+                self.board[move.endRow][move.endCol] = 11
+                
+        if move.isEnPassentMove:
+            self.board[move.startRow][move.endCol] = 0
+            
+        if (move.moved_piece == 1 or move.moved_piece == 7) and (abs(move.startRow - move.endRow) == 2):
+            self.enPassentMove = ((move.startRow + move.endRow)//2 , move.startCol)
+        else: self.enPassentMove = ()
+        
+        self.updateCastlingRights(move)
+        self.castlingRightsLogs.append(CasstleRights(self.currentCastlingRights.wks , self.currentCastlingRights.bks,
+                                                 self.currentCastlingRights.wqs , self.currentCastlingRights.bqs)) 
+        
         
     def undoMove(self):
         if len(self.moveLog) != 0:
@@ -48,8 +71,41 @@ class gameState:
                 self.whiteKingLocation = (move.startRow , move.startCol)
             elif move.moved_piece == 12:
                 self.BlaKingLocation = (move.startRow , move.startCol)
+                
+            if move.isEnPassentMove:
+                self.board[move.endRow][move.endCol] = 0
+                self.board[move.startRow][move.endCol] = move.captured_piece
+                self.enPassentMove = (move.endRow , move.endCol)
+                
+            if (move.moved_piece == 1 or move.moved_piece == 7) and (abs(move.startRow - move.endRow) == 2):
+                self.enPassentMove = ()
+        
+            self.castlingRightsLogs.pop()
+            self.currentCastlingRights = self.castlingRightsLogs[-1]
+            
+            
+            
+    def updateCastlingRights(self, move):
+        if move.moved_piece == 6:
+            self.currentCastlingRights.wks = False
+            self.currentCastlingRights.wqs = False
+        elif move.moved_piece == 12:
+            self.currentCastlingRights.bks = False
+            self.currentCastlingRights.bqs = False
+        elif move.moved_piece == 4 :
+            if move.startCol == 0:
+                self.currentCastlingRights.wks = False
+            else:
+                self.currentCastlingRights.wqs = False
+        elif move.moved_piece == 10:
+            if move.startCol == 0:
+                self.currentCastlingRights.bqs = False
+            else:
+                self.currentCastlingRights.bks = False
     
     def getValidMoves(self):
+        tempEnPassent = self.enPassentMove
+        
         moves = self.getAllPossibleMoves()
         for i in range(len(moves)-1, -1, -1):
             self.makeMove(moves[i])        
@@ -68,6 +124,8 @@ class gameState:
         else:
             self.checkMate = False
             self.staleMate = False
+            
+        self.enPassentMove = tempEnPassent
         return moves
     
     
@@ -110,10 +168,14 @@ class gameState:
             if r-1 >=0 and c-1 >= 0:
                 if 6 < self.board[r-1][c-1] < 13:
                     moves.append(Move((r,c) , (r-1 , c-1) , self.board))
+                elif ((r-1,c-1) == self.enPassentMove):
+                    moves.append(Move((r,c) , (r-1 , c-1) , self.board , enPassentPossible=True))
             
             if r-1 >= 0 and c+1 <= 7:
                 if 6 < self.board[r-1][c+1] < 13:
                     moves.append(Move((r,c) , (r-1 , c+1) , self.board))
+                elif ((r-1,c+1) == self.enPassentMove):
+                    moves.append(Move((r,c) , (r-1 , c+1) , self.board , enPassentPossible=True))
                     
             
         else:
@@ -126,11 +188,16 @@ class gameState:
             if r+1 <=7 and c-1 >= 0:
                 if 0 < self.board[r+1][c-1] < 7:
                     moves.append(Move((r,c) , (r+1 , c-1) , self.board))
+                elif ((r+1,c-1) == self.enPassentMove):
+                    moves.append(Move((r,c) , (r+1 , c-1) , self.board , enPassentPossible=True))
             
             if r+1 <= 7 and c+1 <= 7 :
                 if 0 < self.board[r+1][c+1] < 7:
                     moves.append(Move((r,c) , (r+1 , c+1) , self.board))
-            
+                elif ((r+1,c+1) == self.enPassentMove):
+                    moves.append(Move((r,c) , (r+1 , c+1) , self.board , enPassentPossible=True)) 
+                    
+                               
     # def getKnightMoves(self, r, c, moves):
     #     if self.whiteToMove:
     #         if r-2 >= 0 and c-1 >= 0 :
@@ -523,6 +590,7 @@ class gameState:
         direction = [(-1,-1) , (-1,0) , (-1,+1) , (0,+1) , 
                      (+1,+1) , (+1,0) , (+1,-1) , (0,-1)]
         self.generator(r, c, moves, direction)
+        
 
     def generator(self, r, c, moves, direction , n=2):
         
@@ -544,6 +612,15 @@ class gameState:
                 else:
                     break 
 
+
+
+class CasstleRights():
+    def __init__(self , wks , bks , wqs , bqs):
+        self.wks = wks
+        self.bks = bks
+        self.wqs = wqs
+        self.bqs = bqs
+
         
 class Move():
     
@@ -554,13 +631,20 @@ class Move():
                    "e": 4, "f": 5, "g": 6, "h": 7}
     cols_to_files = {v: k for k, v in files_to_cols.items()}
 
-    def __init__(self , start , end , board):
+    def __init__(self , start , end , board , enPassentPossible = False):
         self.startRow = start[0]
         self.startCol = start[1]
         self.endRow = end[0]
         self.endCol = end[1]
         self.moved_piece = board[self.startRow][self.startCol]
         self.captured_piece = board[self.endRow][self.endCol]
+
+        self.isPawnPromotion =  ((self.moved_piece == 1 and self.endRow == 0) or (self.moved_piece == 7 and self.endRow == 7)) 
+
+        self.isEnPassentMove = enPassentPossible
+        if self.isEnPassentMove:
+            self.captured_piece = 1 if self.moved_piece == 7 else 7
+        
         self.MoveId = self.startRow*1000 + self.startCol*100 + self.endRow*10 + self.endCol
         
     def __eq__(self, other):
