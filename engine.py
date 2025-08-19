@@ -62,7 +62,9 @@ class gameState:
             if self.inCheck(): 
                 self.checkMate = True
                 print("Check Mate")
-            else : self.staleMate = True
+            else : 
+                self.staleMate = True
+                print("Stalemate")
         else:
             self.checkMate = False
             self.staleMate = False
