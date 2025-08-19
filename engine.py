@@ -13,13 +13,11 @@ class gameState:
         self.board[1] = [self.BP] * 8
         self.board[0] = [self.BR, self.BN, self.BB, self.BQ, self.BK, self.BB, self.BN, self.BR]
 
-        
         self.whiteToMove = True
         self.moveLog = []
         self.whiteKingLocation = (7,4)
         self.BlaKingLocation = (0,4)
         
-
         self.moveFunctionList = [self.getPawnMoves , self.getKnightMoves , self.getBishopMoves ,
                                  self.getRookMoves , self.getQueenMoves , self.getKingMoves , 
                                  self.getPawnMoves , self.getKnightMoves , self.getBishopMoves ,
@@ -127,8 +125,6 @@ class gameState:
                 if 0 < self.board[r+1][c+1] < 7:
                     moves.append(Move((r,c) , (r+1 , c+1) , self.board))
             
-        
-        
     # def getKnightMoves(self, r, c, moves):
     #     if self.whiteToMove:
     #         if r-2 >= 0 and c-1 >= 0 :
@@ -196,16 +192,14 @@ class gameState:
     #         if r-1 >= 0 and c-2 >= 0 :
     #             if 0 <= self.board[r-1][c-2] < 7 :
     #                 moves.append(Move((r,c) , (r-1 , c-2) , self.board))
-                    
-    
+
     def getKnightMoves(self , r, c, moves):
         direction = [
             (-2, -1), (-2, +1), (+2, -1), (+2, +1),
             (+1, +2), (+1, -2), (-1, +2), (-1, -2)
         ]
         self.generator(r, c, moves, direction)
-            
-    
+
     # def getBishopMoves(self, r, c, moves):
     #     if self.whiteToMove:
     #         for i in range(1,8):
@@ -280,14 +274,11 @@ class gameState:
     #                     moves.append(Move((r,c) , (r-i , c+i) , self.board))
     #                 if 0 < self.board[r-i][c+i] < 13 :
     #                     break
-                    
 
     def getBishopMoves(self, r, c, moves):
         direction = [(-1, -1), (-1, +1), (+1, -1), (+1, +1)]    
         self.generator(r, c, moves, direction, 8)
-        
-        
-        
+
     # def getRookMoves(self, r, c, moves):
     #     if self.whiteToMove:
     #         for i in range(1,8):
@@ -363,14 +354,11 @@ class gameState:
     #                     moves.append(Move((r,c) , (r , c-i) , self.board))
     #                 if 0 < self.board[r][c-i] < 13 :
     #                     break
-                    
-                    
+                                  
     def getRookMoves(self, r, c, moves):
         direction = [(0, -1), (0, +1), (+1, 0), (-1, 0)]    
         self.generator(r, c, moves, direction, 8)
-                    
-                    
-                    
+                       
     # def getQueenMoves(self, r, c, moves):
     #     if self.whiteToMove:
     #         for i in range(1,8):
@@ -520,20 +508,16 @@ class gameState:
     #                 if 0 < self.board[r-i][c+i] < 13 :
     #                     break
 
-
     def getQueenMoves(self, r, c, moves):
         direction = [(0, -1), (0, +1), (+1, 0), (-1, 0), 
                      (-1, -1), (-1, +1), (+1, -1), (+1, +1)]   
         self.generator(r, c, moves, direction, 8)
         
-
     def getKingMoves(self, r, c, moves):
         direction = [(-1,-1) , (-1,0) , (-1,+1) , (0,+1) , 
                      (+1,+1) , (+1,0) , (+1,-1) , (0,-1)]
         self.generator(r, c, moves, direction)
-        
-        
-            
+
     def generator(self, r, c, moves, direction , n=2):
         
         for dr , dc in direction:
@@ -564,7 +548,6 @@ class Move():
                    "e": 4, "f": 5, "g": 6, "h": 7}
     cols_to_files = {v: k for k, v in files_to_cols.items()}
 
-    
     def __init__(self , start , end , board):
         self.startRow = start[0]
         self.startCol = start[1]
@@ -578,8 +561,6 @@ class Move():
         if isinstance(other , Move):
             return self.MoveId == other.MoveId
         return False
-    
-    
 
     def getRankFile(self , r , c):
         return self.cols_to_files[c] + self.rows_to_ranks[r]

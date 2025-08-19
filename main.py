@@ -49,14 +49,15 @@ def main():
                     clicked.append(selected)
                 if len(clicked) == 2:
                     move = engine.Move(clicked[0] , clicked[1] , gs.board)
-                    if move in validMoves:
-                        gs.makeMove(move)
-                        moveMade = True
-                        selected = ()
-                        clicked = []
-                        print(move.getChessNotation())
-                    else:
-                        clicked = [selected]
+                    for i in range(len(validMoves)):
+                        if move == validMoves[i]:
+                            gs.makeMove(move)
+                            moveMade = True
+                            selected = ()
+                            clicked = []
+                            print(move.getChessNotation())
+                    if not moveMade:
+                        clicked = [selected] 
             elif e.type == p.KEYDOWN :
                 if e.key == p.K_z:
                     gs.undoMove()
