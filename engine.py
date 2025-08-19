@@ -17,6 +17,8 @@ class gameState:
         self.moveLog = []
         self.whiteKingLocation = (7,4)
         self.BlaKingLocation = (0,4)
+        self.checkMate = False
+        self.staleMate = False
         
         self.moveFunctionList = [self.getPawnMoves , self.getKnightMoves , self.getBishopMoves ,
                                  self.getRookMoves , self.getQueenMoves , self.getKingMoves , 
@@ -57,7 +59,9 @@ class gameState:
             self.whiteToMove = not self.whiteToMove
             self.undoMove()
         if len(moves) == 0 :
-            if self.inCheck(): self.checkMate = True
+            if self.inCheck(): 
+                self.checkMate = True
+                print("Check Mate")
             else : self.staleMate = True
         else:
             self.checkMate = False
