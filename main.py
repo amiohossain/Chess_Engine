@@ -51,7 +51,7 @@ def main():
                     move = engine.Move(clicked[0] , clicked[1] , gs.board)
                     for i in range(len(validMoves)):
                         if move == validMoves[i]:
-                            gs.makeMove(move)
+                            gs.makeMove(validMoves[i])
                             moveMade = True
                             selected = ()
                             clicked = []
