@@ -70,6 +70,7 @@ def main():
                     gs.undoMove()
                     moveMade = True
                     animate = False
+                    gameOver = False
                 elif e.key == p.K_r :
                     gs = engine.gameState()
                     validMoves = gs.getValidMoves()
@@ -77,6 +78,7 @@ def main():
                     sqClicked = [] 
                     moveMade = False
                     animate = True
+                    gameOver = False
                     
         if not gameOver and not humanTurn:
             AIMove = SmartMoveFinder.findProfitableMove(gs, validMoves)
