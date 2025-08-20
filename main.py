@@ -6,8 +6,8 @@ dimension = 8
 sq_size = height//dimension
 max_fps = 15
 images = {} #Stores Image
-selected = () #Selected Square
-clicked = [] 
+sqSelected = () #Selected Square
+sqClicked = [] 
 
 
 #Image Loader
@@ -17,7 +17,7 @@ def load_img():
         images[str(piece)] = p.transform.scale(p.image.load(f"./images/{str(piece)}.png") , (sq_size , sq_size))
         
 def main():
-    global selected ,clicked
+    global sqSelected ,sqClicked
     
     #Screen Initializer 
     p.init()
@@ -41,23 +41,23 @@ def main():
                 loc = p.mouse.get_pos()
                 row = loc[1]//sq_size
                 col = loc[0]//sq_size
-                if selected == (row , col):
-                    selected = ()
-                    clicked = []
+                if sqSelected == (row , col):
+                    sqSelected = ()
+                    sqClicked = []
                 else:
-                    selected = (row , col)
-                    clicked.append(selected)
-                if len(clicked) == 2:
-                    move = engine.Move(clicked[0] , clicked[1] , gs.board)
+                    sqSelected = (row , col)
+                    sqClicked.append(sqSelected)
+                if len(sqClicked) == 2:
+                    move = engine.Move(sqClicked[0] , sqClicked[1] , gs.board)
                     for i in range(len(validMoves)):
                         if move == validMoves[i]:
                             gs.makeMove(validMoves[i])
                             moveMade = True
-                            selected = ()
-                            clicked = []
+                            sqSelected = ()
+                            sqClicked = []
                             print(move.getChessNotation())
                     if not moveMade:
-                        clicked = [selected] 
+                        sqClicked = [sqSelected] 
             elif e.type == p.KEYDOWN :
                 if e.key == p.K_z:
                     gs.undoMove()
@@ -65,12 +65,28 @@ def main():
         if moveMade :
             validMoves = gs.getValidMoves()
             moveMade = False
-        drawGameState(scrn , gs)
+        drawGameState(scrn , gs, validMoves, sqSelected)
         clk.tick(max_fps)
         p.display.flip()
         
-def drawGameState(scrn , gs):
+        
+def highlightSquares(screen , gs, validMoves, sqSelected):
+    if sqSelected != ():
+        r,c = sqSelected
+        if (gs.whiteToMove and (1 <= gs.board[r][c] <= 6)) or ((not gs.whiteToMove) and (7 <= gs.boad[r][c] <= 12)):
+            s = p.Surface((sq_size,sq_size))
+            s.set_alpha(100)
+            s.fill(p.Color("blue"))
+            screen.blit(s, (c*sq_size,r*sq_size))
+            s.fill(p.Color("yellow"))
+            for move in validMoves:
+                if move.startRow == r and move.startCol == c:
+                    screen.blit(s, (move.endCol*sq_size, move.endRow*sq_size))
+                    
+        
+def drawGameState(scrn , gs, validMoves, sqSelected):
    drawBoard(scrn)
+   highlightSquares(scrn, gs, validMoves, sqSelected)
    drawPiece(scrn,gs.board)
    
 def drawBoard(scrn):
