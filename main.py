@@ -11,11 +11,11 @@ images = {} #Stores Image
 sqSelected = () #Selected Square
 sqClicked = [] 
 
-playerOne = True
+playerOne = False
 playerTwo = False
 gameOver = False
 
-#Image Loader
+# Image Loader
 def load_img():
     pieces = list(range(1,13))
     for piece in pieces:
@@ -24,18 +24,18 @@ def load_img():
 def main():
     global sqSelected ,sqClicked, animate, gameOver
     
-    #scrn Initializer 
+    # Screen Initializer 
     p.init()
     scrn = p.display.set_mode((width , height))
     clk = p.time.Clock()
     scrn.fill(p.Color("white"))
 
-    #Engine Initializer
+    # Engine Initializer
     gs = engine.gameState()
     validMoves = gs.getValidMoves()
     moveMade = False
     
-    #Window Keeper
+    # Window Keeper
     load_img()
     running = True
     while running:
@@ -79,7 +79,10 @@ def main():
                     animate = True
                     
         if not gameOver and not humanTurn:
-            AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            AIMove = SmartMoveFinder.findBestMove(gs, validMoves)
+            if AIMove == None:
+                AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            # AIMove = SmartMoveFinder.findRandomMove(validMoves)
             gs.makeMove(AIMove)
             moveMade = True
             animate = True                    
@@ -92,7 +95,7 @@ def main():
             animate = True
             
         drawGameState(scrn , gs, validMoves, sqSelected)
-        
+
         if gs.checkMate:
             gameOver = True
             if gs.whiteToMove:
@@ -106,8 +109,8 @@ def main():
                 
         clk.tick(max_fps)
         p.display.flip()
-        
-        
+
+
 def highlightSquares(scrn , gs, validMoves, sqSelected):
     if sqSelected != ():
         r,c = sqSelected
@@ -157,9 +160,9 @@ def animateMove(move, scrn, board, clock):
         color = colors[(move.endRow + move.endCol)%2]
         endSquare = p.Rect(move.endCol*sq_size, move.endRow*sq_size, sq_size, sq_size)
         p.draw.rect(scrn, color, endSquare)
-        if move.captured_piece != 0:
-            scrn.blit(images[str(move.moved_piece)], endSquare)
-        scrn.blit(images[str(move.moved_piece)], p.Rect(c*sq_size, r*sq_size, sq_size, sq_size))
+        if move.capturedPiece != 0:
+            scrn.blit(images[str(move.movedPiece)], endSquare)
+        scrn.blit(images[str(move.movedPiece)], p.Rect(c*sq_size, r*sq_size, sq_size, sq_size))
         p.display.flip()
         clock.tick(60)
         

@@ -1,5 +1,4 @@
 import numpy as np
-import chess
 
 class gameState:
     E = 0
@@ -15,6 +14,10 @@ class gameState:
 
         self.whiteToMove = True
         self.moveLog = []
+        self.captured = 0
+        self.capturedWhite = []
+        self.capturedBlack = []
+
         self.whiteKingLocation = (7,4)
         self.BlaKingLocation = (0,4)
         self.checkMate = False
@@ -33,25 +36,25 @@ class gameState:
     
     def makeMove(self , move):
         self.board[move.startRow][move.startCol] = 0
-        self.board[move.endRow][move.endCol] = move.moved_piece
+        self.board[move.endRow][move.endCol] = move.movedPiece
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove
         
-        if move.moved_piece == 6:
+        if move.movedPiece == 6:
             self.whiteKingLocation = (move.endRow , move.endCol)
-        elif move.moved_piece == 12:
+        elif move.movedPiece == 12:
             self.BlaKingLocation = (move.endRow , move.endCol)
             
         if move.isPawnPromotion:
-            if move.moved_piece == 1:
+            if move.movedPiece == 1:
                 self.board[move.endRow][move.endCol] = 5
-            elif move.moved_piece == 7:
+            elif move.movedPiece == 7:
                 self.board[move.endRow][move.endCol] = 11
                 
         if move.isEnPassentMove:
             self.board[move.startRow][move.endCol] = 0
             
-        if (move.moved_piece == 1 or move.moved_piece == 7) and (abs(move.startRow - move.endRow) == 2):
+        if (move.movedPiece == 1 or move.movedPiece == 7) and (abs(move.startRow - move.endRow) == 2):
             self.enPassentMove = ((move.startRow + move.endRow)//2 , move.startCol)
         else: self.enPassentMove = ()
         
@@ -64,6 +67,23 @@ class gameState:
                 self.board[move.endRow][move.endCol+1] = self.board[move.endRow][move.endCol-2]
                 self.board[move.endRow][move.endCol-2] = 0
         
+        # if move.isCapture:
+        #     if move.isEnPassentMove:
+        #         captured = 1 if move.movedPiece == 7 else 7
+        #     else:
+        #         captured = move.capturedPiece
+
+        #     if captured <= 6:
+        #         self.capturedWhite.append(captured)
+        #     else:
+        #         self.capturedBlack.append(captured)
+
+        #     print(self.capturedBlack, self.capturedWhite)
+
+
+
+
+
         
         self.updateCastlingRights(move)
         self.castlingRightsLogs.append(CasstleRights(self.currentCastlingRights.wks , self.currentCastlingRights.bks,
@@ -73,21 +93,21 @@ class gameState:
     def undoMove(self):
         if len(self.moveLog) != 0:
             move = self.moveLog.pop()
-            self.board[move.startRow][move.startCol] = move.moved_piece
-            self.board[move.endRow][move.endCol] = move.captured_piece
+            self.board[move.startRow][move.startCol] = move.movedPiece
+            self.board[move.endRow][move.endCol] = move.capturedPiece
             self.whiteToMove = not self.whiteToMove
                     
-            if move.moved_piece == 6:
+            if move.movedPiece == 6:
                 self.whiteKingLocation = (move.startRow , move.startCol)
-            elif move.moved_piece == 12:
+            elif move.movedPiece == 12:
                 self.BlaKingLocation = (move.startRow , move.startCol)
                 
             if move.isEnPassentMove:
                 self.board[move.endRow][move.endCol] = 0
-                self.board[move.startRow][move.endCol] = move.captured_piece
+                self.board[move.startRow][move.endCol] = move.capturedPiece
                 self.enPassentMove = (move.endRow , move.endCol)
                 
-            if (move.moved_piece == 1 or move.moved_piece == 7) and (abs(move.startRow - move.endRow) == 2):
+            if (move.movedPiece == 1 or move.movedPiece == 7) and (abs(move.startRow - move.endRow) == 2):
                 self.enPassentMove = ()
         
             self.castlingRightsLogs.pop()
@@ -257,18 +277,18 @@ class gameState:
 
                 
     def updateCastlingRights(self, move):
-        if move.moved_piece == 6:
+        if move.movedPiece == 6:
             self.currentCastlingRights.wks = False
             self.currentCastlingRights.wqs = False
-        elif move.moved_piece == 12:
+        elif move.movedPiece == 12:
             self.currentCastlingRights.bks = False
             self.currentCastlingRights.bqs = False
-        elif move.moved_piece == 4 :
+        elif move.movedPiece == 4 :
             if move.startCol == 0:
                 self.currentCastlingRights.wqs = False
             elif move.startCol == 7:
                 self.currentCastlingRights.wks = False
-        elif move.moved_piece == 10:
+        elif move.movedPiece == 10:
             if move.startCol == 0:
                 self.currentCastlingRights.bqs = False
             elif move.startCol == 7:
@@ -303,8 +323,6 @@ class CasstleRights():
 
         
 class Move():
-    
-
     ranks_to_rows = {"1": 7, "2": 6, "3": 5, "4": 4,
                    "5": 3, "6": 2, "7": 1, "8": 0}
     rows_to_ranks = {v: k for k, v in ranks_to_rows.items()}
@@ -317,18 +335,20 @@ class Move():
         self.startCol = start[1]
         self.endRow = end[0]
         self.endCol = end[1]
-        self.moved_piece = board[self.startRow][self.startCol]
-        self.captured_piece = board[self.endRow][self.endCol]
+        self.movedPiece = (board[self.startRow][self.startCol])
+        self.capturedPiece = (board[self.endRow][self.endCol])
 
-        self.isPawnPromotion =  ((self.moved_piece == 1 and self.endRow == 0) or (self.moved_piece == 7 and self.endRow == 7)) 
+
+        self.isPawnPromotion =  ((self.movedPiece == 1 and self.endRow == 0) or (self.movedPiece == 7 and self.endRow == 7)) 
 
         self.isEnPassentMove = enPassentPossible
         if self.isEnPassentMove:
-            self.captured_piece = 1 if self.moved_piece == 7 else 7
+            self.capturedPiece = 1 if self.movedPiece == 7 else 7
             
         self.isCastleMove = isCastleMove
         
         self.MoveId = self.startRow*1000 + self.startCol*100 + self.endRow*10 + self.endCol
+        # self.isCapture = (self.capturedPiece != 0) or self.isEnPassentMove
         
         self.piece_names = {1:"White Pawn", 2:"White Knight", 3:"White Bishop", 4:"White Rook", 5:"White Queen", 6:"White King",
                    7:"Black Pawn", 8:"Black Knight", 9:"Black Bishop", 10:"Black Rook", 11:"Black Queen", 12:"Black King",
@@ -343,4 +363,4 @@ class Move():
         return self.cols_to_files[c] + self.rows_to_ranks[r]
     
     def getChessNotation(self):
-        return f"{self.piece_names[self.moved_piece]} moved from {self.getRankFile(self.startRow , self.startCol)} to {self.getRankFile(self.endRow , self.endCol)} Capturing {self.piece_names[self.captured_piece]}"
+        return f"{self.piece_names[self.movedPiece]} moved from {self.getRankFile(self.startRow , self.startCol)} to {self.getRankFile(self.endRow , self.endCol)} Capturing {self.piece_names[self.capturedPiece]}"
