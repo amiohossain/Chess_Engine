@@ -16,21 +16,28 @@ def findProfitableMove(gs, validMoves):
     for playerMove in validMoves:
         gs.makeMove(playerMove)
         oppMoves = gs.getValidMoves()
-        oppMaxScore = -checkMate
-        for oppMove in oppMoves:
-            gs.makeMove(oppMove)
-            if gs.checkMate:
-                score = -multi * checkMate
-            elif gs.staleMate:
-                score = staleMate
-            else:
-                score = -multi * pieceEvaluation(gs.board)
-            
-            if score > oppMaxScore :
-                oppMaxScore = score
-            gs.undoMove()
-        if oppMaxScore > oppMinMaxScore:
+        if gs.staleMate:
+            oppMaxScore = staleMate
+        elif gs.checkMate:
+            oppMaxScore = -checkMate
+        else:
+            oppMaxScore = -checkMate
+            for oppMove in oppMoves:
+                gs.makeMove(oppMove)
+                gs.getValidMoves()
+                if gs.checkMate:
+                    score = checkMate
+                elif gs.staleMate:
+                    score = staleMate
+                else:
+                    score = -multi * pieceEvaluation(gs.board)
+                
+                if score > oppMaxScore :
+                    oppMaxScore = score
+                gs.undoMove()
+        if oppMaxScore < oppMinMaxScore:
             oppMinMaxScore = oppMaxScore
+            bestPlayerMove = playerMove
         gs.undoMove()
     return bestPlayerMove
 
