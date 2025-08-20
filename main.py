@@ -1,5 +1,6 @@
 import pygame as p
 import engine
+import SmartMoveFinder
 
 width = height = 512
 dimension = 8
@@ -10,6 +11,8 @@ images = {} #Stores Image
 sqSelected = () #Selected Square
 sqClicked = [] 
 
+playerOne = True
+playerTwo = False
 gameOver = False
 
 #Image Loader
@@ -36,11 +39,12 @@ def main():
     load_img()
     running = True
     while running:
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not gameOver and humanTurn:
                     loc = p.mouse.get_pos()
                     row = loc[1]//sq_size
                     col = loc[0]//sq_size
@@ -73,6 +77,12 @@ def main():
                     sqClicked = [] 
                     moveMade = False
                     animate = True
+                    
+        if not gameOver and not humanTurn:
+            AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            gs.makeMove(AIMove)
+            moveMade = True
+            animate = True                    
                     
         if moveMade :
             if animate:
