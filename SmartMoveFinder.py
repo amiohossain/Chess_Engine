@@ -9,25 +9,31 @@ def findRandomMove(validMoves):
 
 # moves only based on piece values 
 
-def findBestMove(gs, validMoves):
+def findProfitableMove(gs, validMoves):
     multi = 1 if gs.whiteToMove else -1
-    maxScore = -checkMate
-    bestMove = None
+    oppMinMaxScore = checkMate
+    bestPlayerMove = None
     
     for playerMove in validMoves:
         gs.makeMove(playerMove)
-        if gs.checkMate:
-            score = checkMate
-        elif gs.staleMate:
-            score = staleMate
-        else:
-            score = multi * pieceEvaluation(gs.board)
-        
-        if score > maxScore :
-            maxScore = score
-            bestMove = playerMove
+        oppMoves = gs.getValidMoves()
+        oppMaxScore = -checkMate
+        for oppMove in oppMoves:
+            gs.makeMove(oppMove)
+            if gs.checkMate:
+                score = -multi * checkMate
+            elif gs.staleMate:
+                score = staleMate
+            else:
+                score = -multi * pieceEvaluation(gs.board)
+            
+            if score > oppMaxScore :
+                oppMaxScore = score
+            gs.undoMove()
+        if oppMaxScore > oppMinMaxScore:
+            oppMinMaxScore = oppMaxScore
         gs.undoMove()
-    return bestMove
+    return bestPlayerMove
 
 
 def pieceEvaluation(board):

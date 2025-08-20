@@ -149,10 +149,8 @@ class gameState:
         if len(moves) == 0 :
             if self.inCheck(): 
                 self.checkMate = True
-                print("Check Mate")
             else : 
                 self.staleMate = True
-                print("Stalemate")
         else:
             self.checkMate = False
             self.staleMate = False
