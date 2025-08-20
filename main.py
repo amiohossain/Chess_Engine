@@ -11,7 +11,7 @@ images = {} #Stores Image
 sqSelected = () #Selected Square
 sqClicked = [] 
 
-playerOne = False
+playerOne = True
 playerTwo = False
 gameOver = False
 
@@ -152,7 +152,8 @@ def animateMove(move, scrn, board, clock):
     dR = move.endRow - move.startRow
     dC = move.endCol - move.startCol
     framePerSq = 10
-    frameCnt = (abs(dR)+abs(dC))*framePerSq
+    #frameCnt = (abs(dR)+abs(dC))*framePerSq
+    frameCnt = 5
     for frame in range(frameCnt+1):
         r, c = (move.startRow + dR*frame/frameCnt, move.startCol + dC*frame/frameCnt)
         drawBoard(scrn)

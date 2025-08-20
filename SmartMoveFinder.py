@@ -13,7 +13,6 @@ def findProfitableMove(gs, validMoves):
     multi = 1 if gs.whiteToMove else -1
     oppMinMaxScore = checkMate
     bestPlayerMove = None
-    
     for playerMove in validMoves:
         gs.makeMove(playerMove)
         oppMoves = gs.getValidMoves()
