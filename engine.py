@@ -52,7 +52,7 @@ class gameState:
             elif move.movedPiece == 7:
                 self.board[move.endRow][move.endCol] = 11
                 
-        if move.isEnPassentMove:
+        if move.isEnPassentPossible:
             self.board[move.startRow][move.endCol] = 0
             
         if (move.movedPiece == 1 or move.movedPiece == 7) and (abs(move.startRow - move.endRow) == 2):
@@ -71,7 +71,7 @@ class gameState:
 
         
         # if move.isCapture:
-        #     if move.isEnPassentMove:
+        #     if move.isEnPassentPossible:
         #         captured = 1 if move.movedPiece == 7 else 7
         #     else:
         #         captured = move.capturedPiece
@@ -105,7 +105,7 @@ class gameState:
             elif move.movedPiece == 12:
                 self.BlaKingLocation = (move.startRow , move.startCol)
                 
-            if move.isEnPassentMove:
+            if move.isEnPassentPossible:
                 self.board[move.endRow][move.endCol] = 0
                 self.board[move.startRow][move.endCol] = move.capturedPiece
                 
@@ -351,18 +351,18 @@ class Move():
 
         self.isPawnPromotion =  ((self.movedPiece == 1 and self.endRow == 0) or (self.movedPiece == 7 and self.endRow == 7)) 
 
-        self.isEnPassentMove = enPassentPossible
-        if self.isEnPassentMove:
+        self.isEnPassentPossible = enPassentPossible
+        if self.isEnPassentPossible:
             self.capturedPiece = 1 if self.movedPiece == 7 else 7
             
         self.isCastleMove = isCastleMove
         
         self.MoveId = self.startRow*1000 + self.startCol*100 + self.endRow*10 + self.endCol
-        # self.isCapture = (self.capturedPiece != 0) or self.isEnPassentMove
+        # self.isCapture = (self.capturedPiece != 0) or self.isEnPassentPossible
         
-        self.piece_names = {1:"White Pawn", 2:"White Knight", 3:"White Bishop", 4:"White Rook", 5:"White Queen", 6:"White King",
-                   7:"Black Pawn", 8:"Black Knight", 9:"Black Bishop", 10:"Black Rook", 11:"Black Queen", 12:"Black King",
-                   0:"Nothing"} 
+        # self.piece_names = {1:"White Pawn", 2:"White Knight", 3:"White Bishop", 4:"White Rook", 5:"White Queen", 6:"White King",
+        #            7:"Black Pawn", 8:"Black Knight", 9:"Black Bishop", 10:"Black Rook", 11:"Black Queen", 12:"Black King",
+        #            0:"Nothing"} 
         
     def __eq__(self, other):
         if isinstance(other , Move):
@@ -373,4 +373,5 @@ class Move():
         return self.cols_to_files[c] + self.rows_to_ranks[r]
     
     def getChessNotation(self):
-        return f"{self.piece_names[self.movedPiece]} moved from {self.getRankFile(self.startRow , self.startCol)} to {self.getRankFile(self.endRow , self.endCol)} Capturing {self.piece_names[self.capturedPiece]}"
+        return self.getRankFile(self.startRow , self.startCol) + self.getRankFile(self.endRow , self.endCol)
+        # return f"{self.piece_names[self.movedPiece]} moved from {self.getRankFile(self.startRow , self.startCol)} to {self.getRankFile(self.endRow , self.endCol)} Capturing {self.piece_names[self.capturedPiece]}"

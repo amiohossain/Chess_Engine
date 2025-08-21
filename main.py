@@ -158,6 +158,9 @@ def animateMove(move, scrn, board, clock):
     framePerSq = 10
     #frameCnt = (abs(dR)+abs(dC))*framePerSq
     frameCnt = 5
+    
+    captured_piece = move.capturedPiece
+    en_passant_row = -1
     for frame in range(frameCnt+1):
         r, c = (move.startRow + dR*frame/frameCnt, move.startCol + dC*frame/frameCnt)
         drawBoard(scrn)
@@ -165,8 +168,11 @@ def animateMove(move, scrn, board, clock):
         color = colors[(move.endRow + move.endCol)%2]
         endSquare = p.Rect(move.endCol*sq_size, move.endRow*sq_size, sq_size, sq_size)
         p.draw.rect(scrn, color, endSquare)
-        if move.capturedPiece != 0:
-            scrn.blit(images[str(move.movedPiece)], endSquare)
+        # if move.capturedPiece != 0:
+        #     if move.isEnPassentPossible:
+        #         enPassantRow = move.endRow + 1  if move.capturedPiece == 7 else move.endRow - 1
+        #         endSquare = p.Rect(move.endCol * sq_size, enPassantRow * sq_size, sq_size, sq_size )
+        #     scrn.blit(images[str(move.movedPiece)], endSquare)
         scrn.blit(images[str(move.movedPiece)], p.Rect(c*sq_size, r*sq_size, sq_size, sq_size))
         p.display.flip()
         clock.tick(60)
