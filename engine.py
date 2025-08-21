@@ -282,19 +282,24 @@ class gameState:
         if move.movedPiece == 6:
             self.currentCastlingRights.wks = False
             self.currentCastlingRights.wqs = False
+            
         elif move.movedPiece == 12:
             self.currentCastlingRights.bks = False
             self.currentCastlingRights.bqs = False
-        elif move.movedPiece == 4 :
-            if move.startCol == 0:
-                self.currentCastlingRights.wqs = False
-            elif move.startCol == 7:
-                self.currentCastlingRights.wks = False
-        elif move.movedPiece == 10:
-            if move.startCol == 0:
-                self.currentCastlingRights.bqs = False
-            elif move.startCol == 7:
-                self.currentCastlingRights.bks = False
+            
+        elif move.capturedPiece == 4 :
+            if move.endRow == 7:
+                if move.endCol == 0:
+                    self.currentCastlingRights.wqs = False
+                elif move.endCol == 7:
+                    self.currentCastlingRights.wks = False
+                
+        elif move.capturedPiece == 10:
+            if move.endRow == 0:
+                if move.endCol == 0:
+                    self.currentCastlingRights.bqs = False
+                elif move.endCol == 7:
+                    self.currentCastlingRights.bks = False
                 
     def getCastleMoves(self, r, c, moves):
         if self.squareUnderAttack(r, c):

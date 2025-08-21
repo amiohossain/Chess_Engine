@@ -12,7 +12,7 @@ sqSelected = () #Selected Square
 sqClicked = [] 
 
 playerOne = True
-playerTwo = False
+playerTwo = True
 gameOver = False
 
 # Image Loader
