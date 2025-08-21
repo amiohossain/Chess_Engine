@@ -22,7 +22,8 @@ class gameState:
         self.BlaKingLocation = (0,4)
         self.checkMate = False
         self.staleMate = False
-        self.enPassentMove = ()
+        self.enPassantMove = ()
+        self.enPassantMoveLog = [self.enPassantMove]
         
         self.currentCastlingRights = CasstleRights(True, True, True, True)
         self.castlingRightsLogs = [CasstleRights(self.currentCastlingRights.wks , self.currentCastlingRights.bks,
@@ -55,8 +56,8 @@ class gameState:
             self.board[move.startRow][move.endCol] = 0
             
         if (move.movedPiece == 1 or move.movedPiece == 7) and (abs(move.startRow - move.endRow) == 2):
-            self.enPassentMove = ((move.startRow + move.endRow)//2 , move.startCol)
-        else: self.enPassentMove = ()
+            self.enPassantMove = ((move.startRow + move.endRow)//2 , move.startCol)
+        else: self.enPassantMove = ()
         
         
         if move.isCastleMove:
@@ -85,7 +86,7 @@ class gameState:
 
 
 
-
+        self.enPassantMoveLog.append(self.enPassantMove)
         
         self.updateCastlingRights(move)
         self.castlingRightsLogs.append(CasstleRights(self.currentCastlingRights.wks , self.currentCastlingRights.bks,
@@ -107,10 +108,12 @@ class gameState:
             if move.isEnPassentMove:
                 self.board[move.endRow][move.endCol] = 0
                 self.board[move.startRow][move.endCol] = move.capturedPiece
-                self.enPassentMove = (move.endRow , move.endCol)
+                
+            self.enPassantMoveLog.pop()
+            self.enPassantMove = self.enPassantMoveLog[-1]
                 
             if (move.movedPiece == 1 or move.movedPiece == 7) and (abs(move.startRow - move.endRow) == 2):
-                self.enPassentMove = ()
+                self.enPassantMove = ()
         
             self.castlingRightsLogs.pop()
             self.currentCastlingRights = CasstleRights(
@@ -132,7 +135,7 @@ class gameState:
             self.staleMate = False
     
     def getValidMoves(self):
-        tempEnPassent = self.enPassentMove
+        tempEnPassent = self.enPassantMove
         tempCastleRights = CasstleRights(self.currentCastlingRights.wks , self.currentCastlingRights.bks,
                                             self.currentCastlingRights.wqs , self.currentCastlingRights.bqs)
         
@@ -159,7 +162,7 @@ class gameState:
             self.checkMate = False
             self.staleMate = False
             
-        self.enPassentMove = tempEnPassent
+        self.enPassantMove = tempEnPassent
         self.currentCastlingRights = tempCastleRights
         return moves
     
@@ -203,13 +206,13 @@ class gameState:
             if r-1 >=0 and c-1 >= 0:
                 if 6 < self.board[r-1][c-1] < 13:
                     moves.append(Move((r,c) , (r-1 , c-1) , self.board))
-                elif ((r-1,c-1) == self.enPassentMove):
+                elif ((r-1,c-1) == self.enPassantMove):
                     moves.append(Move((r,c) , (r-1 , c-1) , self.board , enPassentPossible=True))
             
             if r-1 >= 0 and c+1 <= 7:
                 if 6 < self.board[r-1][c+1] < 13:
                     moves.append(Move((r,c) , (r-1 , c+1) , self.board))
-                elif ((r-1,c+1) == self.enPassentMove):
+                elif ((r-1,c+1) == self.enPassantMove):
                     moves.append(Move((r,c) , (r-1 , c+1) , self.board , enPassentPossible=True))
                     
             
@@ -223,13 +226,13 @@ class gameState:
             if r+1 <=7 and c-1 >= 0:
                 if 0 < self.board[r+1][c-1] < 7:
                     moves.append(Move((r,c) , (r+1 , c-1) , self.board))
-                elif ((r+1,c-1) == self.enPassentMove):
+                elif ((r+1,c-1) == self.enPassantMove):
                     moves.append(Move((r,c) , (r+1 , c-1) , self.board , enPassentPossible=True))
             
             if r+1 <= 7 and c+1 <= 7 :
                 if 0 < self.board[r+1][c+1] < 7:
                     moves.append(Move((r,c) , (r+1 , c+1) , self.board))
-                elif ((r+1,c+1) == self.enPassentMove):
+                elif ((r+1,c+1) == self.enPassantMove):
                     moves.append(Move((r,c) , (r+1 , c+1) , self.board , enPassentPossible=True)) 
                     
     def getKnightMoves(self , r, c, moves):
