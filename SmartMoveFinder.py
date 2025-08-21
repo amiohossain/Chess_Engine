@@ -3,12 +3,11 @@ import random
 pieceScore = {1:1, 2:3, 3:3, 4:5, 5:8, 6:10, 7:1, 8:3, 9:3, 10:5, 11:8, 12:10, 0:0} 
 checkMate = 1000
 staleMate = 0
-DEPTH = 2
+DEPTH = 3
+counter = 0
 
 def findRandomMove(validMoves):
     return random.choice(validMoves)
-
-# moves only based on piece values 
 
 def findMinMaxMove(gs, validMoves):
     multi = 1 if gs.whiteToMove else -1
@@ -42,13 +41,13 @@ def findMinMaxMove(gs, validMoves):
         gs.undoMove()
     return bestPlayerMove
 
-
 def findBestMove(gs, validMoves):
     global nextMove
     nextMove = None
     # findMinMaxMoveRecursive(gs, validMoves, DEPTH, gs.whiteToMove)
-    findNegaMaxMove(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
-    
+    # findNegaMaxMove(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    # findNegaMaxMoveAlphaBeta(gs, validMoves, DEPTH, -checkMate, checkMate, 1 if gs.whiteToMove else -1)
+        
     return nextMove
 
 def findMinMaxMoveRecursive(gs, validMoves, depth, whiteToMove):
@@ -84,20 +83,44 @@ def findMinMaxMoveRecursive(gs, validMoves, depth, whiteToMove):
         return minScore
                 
 def findNegaMaxMove(gs, validMoves, depth, multi):
-    global nextMove
+    global nextMove , counter
+    counter+=1
+    if depth == 0:
+        return multi * scoreBoard(gs)
+    maxScore = -checkMate
+    print(depth)
+    for move in validMoves:
+        gs.makeMove(move)
+        nextMoves = gs.getValidMoves()
+        score = -findNegaMaxMove(gs, nextMoves, depth-1, -multi)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        gs.undoMove()
+    print(counter)
+    return maxScore
+
+def findNegaMaxMoveAlphaBeta(gs, validMoves, depth, alpha, beta, multi):
+    global nextMove , counter
+    counter+=1
     if depth == 0:
         return multi * scoreBoard(gs)
     maxScore = -checkMate
     for move in validMoves:
         gs.makeMove(move)
         nextMoves = gs.getValidMoves()
-        score = -findNegaMaxMove(gs, nextMoves, depth-1, -multi)
-        print(len(validMoves))
+        score = -findNegaMaxMoveAlphaBeta(gs, nextMoves, depth-1, -beta, -alpha, -multi)
         if score > maxScore:
             maxScore = score
             if depth == DEPTH:
                 nextMove = move
         gs.undoMove()
+        if maxScore > alpha:
+            alpha = maxScore
+        if alpha >= beta:
+            break
+    print(counter)
     return maxScore
 
 def scoreBoard(gs):

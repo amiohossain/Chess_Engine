@@ -65,6 +65,8 @@ def main():
                                 print(move.getChessNotation())
                         if not moveMade:
                             sqClicked = [sqSelected] 
+                        else:
+                            print(move.getChessNotation())
             elif e.type == p.KEYDOWN :
                 if e.key == p.K_z :
                     gs.undoMove()
