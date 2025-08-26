@@ -315,12 +315,12 @@ class gameState:
     def getKingSideCastleMoves(self, r, c, moves):
         if self.board[r][c+1] == 0 and self.board[r][c+2] == 0:
             if not self.squareUnderAttack(r, c+1) and not self.squareUnderAttack(r, c+2):
-                moves.append(Move((r, c), (r, c+2), self.board, isCastleMove = True ))
+                moves.append(Move((r, c), (r, c+2), self.board, CastleMove = True ))
     
     def getQueenSideCastleMoves(self, r, c, moves):
         if self.board[r][c-1] == 0 and self.board[r][c-2] == 0 and self.board[r][c-3] == 0:
             if not self.squareUnderAttack(r, c-1) and not self.squareUnderAttack(r, c-2):
-                moves.append(Move((r, c), (r, c-2), self.board, isCastleMove=True))
+                moves.append(Move((r, c), (r, c-2), self.board, CastleMove=True))
 
     
 
@@ -340,14 +340,14 @@ class Move():
                    "e": 4, "f": 5, "g": 6, "h": 7}
     cols_to_files = {v: k for k, v in files_to_cols.items()}
 
-    def __init__(self , start , end , board , enPassentPossible = False, isCastleMove = False):
+    def __init__(self , start , end , board , enPassentPossible = False, CastleMove = False):
         self.startRow = start[0]
         self.startCol = start[1]
         self.endRow = end[0]
         self.endCol = end[1]
         self.movedPiece = (board[self.startRow][self.startCol])
         self.capturedPiece = (board[self.endRow][self.endCol])
-
+        self.isCaptured = self.capturedPiece != 0
 
         self.isPawnPromotion =  ((self.movedPiece == 1 and self.endRow == 0) or (self.movedPiece == 7 and self.endRow == 7)) 
 
@@ -355,7 +355,7 @@ class Move():
         if self.isEnPassentPossible:
             self.capturedPiece = 1 if self.movedPiece == 7 else 7
             
-        self.isCastleMove = isCastleMove
+        self.isCastleMove = CastleMove
         
         self.MoveId = self.startRow*1000 + self.startCol*100 + self.endRow*10 + self.endCol
         # self.isCapture = (self.capturedPiece != 0) or self.isEnPassentPossible
@@ -373,5 +373,22 @@ class Move():
         return self.cols_to_files[c] + self.rows_to_ranks[r]
     
     def getChessNotation(self):
-        return self.getRankFile(self.startRow , self.startCol) + self.getRankFile(self.endRow , self.endCol)
+        return self.getRankFile(self.startRow , self.startCol) + self.getRankFile(self.endRow , self.endCol) + " "
         # return f"{self.piece_names[self.movedPiece]} moved from {self.getRankFile(self.startRow , self.startCol)} to {self.getRankFile(self.endRow , self.endCol)} Capturing {self.piece_names[self.capturedPiece]}"
+        
+    # def __str__(self):
+    #     if self.isCastleMove:
+    #         return "O-O" if self.endCol == 6 else "O-O-O"
+        
+    #     endSquare = self.getRankFile(self.endRow, self.endCol)
+        
+    #     if self.movedPiece == 1 or self.movedPiece == 7 :
+    #         if self.isCaptured:
+    #             return self.cols_to_files[self.startCol] + "x" + endSquare
+    #         else :
+    #             return endSquare
+            
+    #     moveString = self.movedPiece
+    #     if self.isCaptured:
+    #         moveString += "x"
+    #     return moveString + str(endSquare)

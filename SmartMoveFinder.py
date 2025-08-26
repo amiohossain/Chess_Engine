@@ -1,13 +1,41 @@
 import random
+import time 
 
 pieceScore = {1:1, 2:3, 3:3, 4:5, 5:8, 6:10, 7:1, 8:3, 9:3, 10:5, 11:8, 12:10, 0:0} 
 checkMate = 1000
 staleMate = 0
-DEPTH = 3
+DEPTH = 25
 counter = 0
 
 def findRandomMove(validMoves):
     return random.choice(validMoves)
+
+
+import time
+
+def findBestMove(gs, validMoves, maxDepth=3, timeLimit=None):
+    """
+    Finds the best move for the current player with iterative deepening.
+    Prints depth and best move at each iteration.
+    """
+    global nextMove
+    nextMove = None
+    startTime = time.time()
+    
+    for depth in range(1, maxDepth + 1):
+        print(f"Searching at depth: {depth}")
+        findNegaMaxMoveAlphaBeta(gs, validMoves, depth, -checkMate, checkMate,
+                                 1 if gs.whiteToMove else -1, depth, startTime, timeLimit)
+        
+        if nextMove:
+            print(f"Depth {depth}: Best move so far -> {nextMove.getChessNotation()}")
+        
+        if timeLimit and time.time() - startTime > timeLimit:
+            print("Time limit reached, stopping search.")
+            break
+            
+    return nextMove
+
 
 def findMinMaxMove(gs, validMoves):
     multi = 1 if gs.whiteToMove else -1
@@ -40,15 +68,6 @@ def findMinMaxMove(gs, validMoves):
             bestPlayerMove = playerMove
         gs.undoMove()
     return bestPlayerMove
-
-def findBestMove(gs, validMoves):
-    global nextMove
-    nextMove = None
-    # findMinMaxMoveRecursive(gs, validMoves, DEPTH, gs.whiteToMove)
-    # findNegaMaxMove(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
-    # findNegaMaxMoveAlphaBeta(gs, validMoves, DEPTH, -checkMate, checkMate, 1 if gs.whiteToMove else -1)
-        
-    return nextMove
 
 def findMinMaxMoveRecursive(gs, validMoves, depth, whiteToMove):
     global nextMove
@@ -101,26 +120,48 @@ def findNegaMaxMove(gs, validMoves, depth, multi):
     print(counter)
     return maxScore
 
-def findNegaMaxMoveAlphaBeta(gs, validMoves, depth, alpha, beta, multi):
-    global nextMove , counter
-    counter+=1
+def findNegaMaxMoveAlphaBeta(gs, validMoves, depth, alpha, beta, multi, rootDepth, startTime=None, timeLimit=None):
+    """
+    Alpha-beta pruning negamax search.
+    
+    gs         : gameState
+    validMoves : list of moves at current node
+    depth      : remaining depth
+    alpha, beta: alpha-beta bounds
+    multi      : +1 for white, -1 for black
+    rootDepth  : depth at root node (to update nextMove)
+    startTime  : optional start time for time control
+    timeLimit  : optional time limit in seconds
+    """
+    global nextMove, counter
+    counter += 1
+
+    # Time check
+    if startTime and timeLimit:
+        if time.time() - startTime > timeLimit:
+            return 0  # Return a neutral score if out of time
+
     if depth == 0:
         return multi * scoreBoard(gs)
+
     maxScore = -checkMate
     for move in validMoves:
         gs.makeMove(move)
         nextMoves = gs.getValidMoves()
-        score = -findNegaMaxMoveAlphaBeta(gs, nextMoves, depth-1, -beta, -alpha, -multi)
+        score = -findNegaMaxMoveAlphaBeta(gs, nextMoves, depth - 1, -beta, -alpha, -multi,
+                                          rootDepth, startTime, timeLimit)
+        gs.undoMove()
+
         if score > maxScore:
             maxScore = score
-            if depth == DEPTH:
+            if depth == rootDepth:  # Update nextMove only at root
                 nextMove = move
-        gs.undoMove()
+
         if maxScore > alpha:
             alpha = maxScore
         if alpha >= beta:
             break
-    print(counter)
+
     return maxScore
 
 def scoreBoard(gs):
